@@ -1,0 +1,1 @@
+export { laporanRoutes } from './routes'
