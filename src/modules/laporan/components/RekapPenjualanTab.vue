@@ -5,7 +5,8 @@ import AppDataTable, { type TableColumn } from '@/shared/components/table/AppDat
 import AppStatusBadge from '@/shared/components/badge/AppStatusBadge.vue'
 import { formatRupiah } from '@/shared/utils/money'
 import { formatDate } from '@/shared/utils/date'
-import { Search, DollarSign, Receipt, CreditCard } from 'lucide-vue-next'
+import { Search, DollarSign, Receipt, CreditCard, Download } from 'lucide-vue-next'
+import { exportToCsv } from '@/shared/utils/export'
 
 const invoices = ref<SalesInvoiceWithDetails[]>([])
 const isLoading = ref(false)
@@ -42,6 +43,21 @@ async function loadData() {
   } finally {
     isLoading.value = false
   }
+}
+
+function downloadCsv() {
+  const headers = ['No. Invoice', 'Customer', 'Tgl Faktur', 'Jatuh Tempo', 'Total Penjualan', 'Diterima', 'Sisa Piutang', 'Status']
+  const rows = invoices.value.map((inv) => [
+    inv.invoiceNumber,
+    inv.customerName,
+    inv.invoiceDate,
+    inv.dueDate,
+    inv.totalAmount,
+    inv.paymentSummary.totalPaid,
+    inv.paymentSummary.remainingBalance,
+    inv.paymentSummary.status,
+  ])
+  exportToCsv(`rekap-penjualan-${new Date().toISOString().slice(0, 10)}`, headers, rows)
 }
 
 onMounted(() => {
@@ -110,6 +126,16 @@ onMounted(() => {
         <option value="dp">DP / Sebagian</option>
         <option value="lunas">Lunas</option>
       </select>
+
+      <button
+        type="button"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap"
+        title="Unduh data dalam format CSV untuk Excel"
+        @click="downloadCsv"
+      >
+        <Download class="w-3.5 h-3.5 text-slate-600" />
+        Ekspor CSV
+      </button>
     </div>
 
     <!-- Data Table -->

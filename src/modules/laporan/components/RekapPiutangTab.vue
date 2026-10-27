@@ -4,7 +4,8 @@ import { useRouter } from 'vue-router'
 import { billingLetterService } from '@/modules/keuangan'
 import AppDataTable, { type TableColumn } from '@/shared/components/table/AppDataTable.vue'
 import { formatRupiah } from '@/shared/utils/money'
-import { Search, FileSpreadsheet, AlertTriangle, Users } from 'lucide-vue-next'
+import { Search, FileSpreadsheet, AlertTriangle, Users, Download } from 'lucide-vue-next'
+import { exportToCsv } from '@/shared/utils/export'
 
 const router = useRouter()
 
@@ -62,6 +63,20 @@ async function loadData() {
   }
 }
 
+function downloadCsv() {
+  const headers = ['Kode Customer', 'Nama Customer', 'Total Invoice', 'Total Nilai Faktur', 'Telah Diterima', 'Sisa Saldo Piutang', 'Inv Tertunggak']
+  const rows = filteredSummaries.value.map((s) => [
+    s.customerCode,
+    s.customerName,
+    s.totalInvoices,
+    s.totalBilled,
+    s.totalPaid,
+    s.totalOutstanding,
+    s.unpaidInvoicesCount,
+  ])
+  exportToCsv(`rekap-piutang-${new Date().toISOString().slice(0, 10)}`, headers, rows)
+}
+
 onMounted(() => {
   loadData()
 })
@@ -105,6 +120,16 @@ onMounted(() => {
           class="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-sky-500"
         />
       </div>
+
+      <button
+        type="button"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap"
+        title="Unduh data dalam format CSV untuk Excel"
+        @click="downloadCsv"
+      >
+        <Download class="w-3.5 h-3.5 text-slate-600" />
+        Ekspor CSV
+      </button>
     </div>
 
     <!-- Data Table -->
