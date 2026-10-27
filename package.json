@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev:sma": "vite --mode sma",
-    "dev:st": "vite --mode st",
+    "dev:sma": "vite --mode sma --port 5173",
+    "dev:st": "vite --mode st --port 5174",
     "build:sma": "vite build --mode sma",
     "build:st": "vite build --mode st",
     "preview:sma": "vite preview --outDir dist/sma",
